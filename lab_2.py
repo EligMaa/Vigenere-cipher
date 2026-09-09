@@ -43,8 +43,7 @@ def teksto_tvarkymas():
             sutvarkytas += simb.lower()
     return sutvarkytas
 
-
-def rakto_ilgio_paieska():
+def rakto_ilgio_paieska(paruostas_tekstas):
 
     paruostas_tekstas = teksto_tvarkymas()
 
@@ -89,7 +88,26 @@ def rakto_ilgio_paieska():
 
     return dalikliai
 
-rakto_ilgio_paieska()
+
+
+paruostas_tekstas = teksto_tvarkymas()
 
      
 
+def padalijimas_grupes(paruostas_tekstas):
+
+    galimi_ilgiai = rakto_ilgio_paieska(paruostas_tekstas)
+
+    ilgis = len(paruostas_tekstas) // galimi_ilgiai[0][0]
+
+    grupes = [""] * ilgis
+
+    for i, simbolis in enumerate(paruostas_tekstas):
+        grupes[i % ilgis] += simbolis
+
+    return grupes
+
+
+grupes = padalijimas_grupes(paruostas_tekstas)
+for numeris, grupe in enumerate(grupes, start=1):
+    print(f"S{numeris} = {grupe}")
