@@ -31,9 +31,6 @@ def desifravimas(tekstas, raktas):
     return desifruotas
 
 
-# print(desifravimas(tekstas1, raktas1))
-
-
 def teksto_tvarkymas():
 
     sutvarkytas = ""
@@ -83,23 +80,12 @@ def rakto_ilgio_paieska(paruostas_tekstas):
         reverse=True
     )
 
-    for ilgis, kiekis in dalikliai [:10]:
-        print(f"rakto ilgis {ilgis} pasikartojimų: {kiekis}")
-
     return dalikliai
 
-
-
-paruostas_tekstas = teksto_tvarkymas()
-
-     
-
-def padalijimas_grupes(paruostas_tekstas):
+def padalijimas_grupes(paruostas_tekstas, k):
 
     galimi_ilgiai = rakto_ilgio_paieska(paruostas_tekstas)
-
-    ilgis = len(paruostas_tekstas) // galimi_ilgiai[0][0]
-
+    ilgis = galimi_ilgiai[k][0]
     grupes = [""] * ilgis
 
     for i, simbolis in enumerate(paruostas_tekstas):
@@ -107,7 +93,75 @@ def padalijimas_grupes(paruostas_tekstas):
 
     return grupes
 
+pasiskirstymas_kalboje = {
+    "i": 12.96, "u": 4.59, "g": 1.79, "ą": 0.54,
+    "a": 11.19, "k": 4.17, "ė": 1.66, "į": 0.48,
+    "s": 7.88, "m": 3.58, "b": 1.48, "č": 0.43,
+    "o": 6.74, "l": 3.50, "y": 1.43, "ū": 0.40,
+    "r": 5.67, "p": 2.73, "ų": 1.26, "f": 0.35,
+    "e": 5.62, "v": 2.65, "š": 1.13, "z": 0.35,
+    "t": 5.33, "d": 2.58, "ž": 0.80, "h": 0.28,
+    "n": 5.14, "j": 2.38, "c": 0.60, "ę": 0.17
+}
 
-grupes = padalijimas_grupes(paruostas_tekstas)
-for numeris, grupe in enumerate(grupes, start=1):
-    print(f"S{numeris} = {grupe}")
+def geriausias_cezario_poslinkis(grupe):
+    geriausias_poslinkis = 0
+    maziausias_ivertis = float("inf")
+
+    for poslinkis in range(len(abecele)):
+        desifruota = ""
+        for raide in grupe:
+            index = abecele.find(raide.lower())
+            desifruota += abecele[(index - poslinkis) % len(abecele)]
+
+        daznis = {raide: 0 for raide in abecele}
+        for raide in desifruota:
+            daznis[raide] += 1
+
+        ivertis = 0
+        for raide in abecele:
+            tiketinas = pasiskirstymas_kalboje[raide] * len(grupe) / 100
+            if tiketinas > 0:
+                ivertis += (daznis[raide] - tiketinas) ** 2 / tiketinas
+
+        if ivertis < maziausias_ivertis:
+            maziausias_ivertis = ivertis
+            geriausias_poslinkis = poslinkis
+
+    print(f"poslinkis: {geriausias_poslinkis}")
+    return geriausias_poslinkis
+
+
+def vigenere_rakto_paieska(paruostas_tekstas, k):
+
+    grupes = padalijimas_grupes(paruostas_tekstas, k)
+    poslinkiai = [geriausias_cezario_poslinkis(grupe) for grupe in grupes]
+    raktas = "".join(abecele[poslinkis] for poslinkis in poslinkiai)
+    return raktas
+
+def desifravimas_vigenere_be_rakto():
+
+    paruostas_tekstas = teksto_tvarkymas()
+    galimi_ilgiai = rakto_ilgio_paieska(paruostas_tekstas)
+
+    for k in range(min(4, len(galimi_ilgiai))):
+        raktas = vigenere_rakto_paieska(paruostas_tekstas, k)
+        ilgis, pasikartojimai = galimi_ilgiai[k]
+        tekstas = desifravimas(tekstas2, raktas)
+
+        print(f"Rakto ilgis: {ilgis}")
+        print(f"Galimas raktas: {raktas}\n")
+        print(tekstas)
+
+
+
+
+desifravimas_vigenere_be_rakto()
+print(desifravimas(tekstas1, raktas1))
+
+        
+
+
+
+
+
